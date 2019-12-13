@@ -1,19 +1,16 @@
 const express = require("express");
 const server = express();
-const router = require("./src/services/students/");
-const projectRouter = require("./src/services/projects/");
-const uploadRouter = require("./src/services/files/");
+
+const reviewRouter = require("./src/services/reviews/");
 
 
 
 
-const port = 3001;
+const port = 3003;
 
 server.use(express.json())
 
-server.use("/students", router)
-server.use("/projects", projectRouter)
-server.use("/files", uploadRouter)
+server.use("/reviews", reviewRouter)
 
 
 
