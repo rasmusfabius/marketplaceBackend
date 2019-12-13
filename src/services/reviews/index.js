@@ -69,12 +69,12 @@ router.post("/", async (req, res, next) => {
     res.send("Review created Successfully!")
 })
 
-router.put("/reviews/:id", async (req, res, next) => {
+router.put("/:id", async (req, res, next) => {
     const buffer = await readFile(reviewPath)
     const content = buffer.toString()
     const reviews = JSON.parse(content) 
 
-    const reviewToEdit = reviews.find(review => review._id == req.paramsms.id)
+    const reviewToEdit = reviews.find(review => review._id == req.params.id)
 
     if (reviewToEdit) {
         const mergedReview = Object.assign(reviewToEdit, req.body)
@@ -87,15 +87,15 @@ router.put("/reviews/:id", async (req, res, next) => {
     }
 })
 
-router.delete("/reviews/:id", async (req, res, next) => {
+router.delete("/:id", async (req, res, next) => {
     const buffer = await readFile(reviewPath)
     const content = buffer.toString()
     const reviews = JSON.parse(content) 
 
-    const reviewDelete = reviews.find(review => review._id != req.params.id)  
+    const remainReview = reviews.find(review => review._id != req.params.id)  
 
-    if (reviewDelete.length < reviews.length) {
-            await writeFile(reviewPath, JSON.stringify(reviewDelete))
+    if (remainReview.length < reviews.length) {
+            await writeFile(reviewPath, JSON.stringify(remainReview))
             res.send("Deleted Successfully")
     } else {
         res.send("Review Not Found")
