@@ -88,7 +88,18 @@ router.put("/reviews/:id", async (req, res, next) => {
 })
 
 router.delete("/reviews/:id", async (req, res, next) => {
-    
+    const buffer = await readFile(reviewPath)
+    const content = buffer.toString()
+    const reviews = JSON.parse(content) 
+
+    const reviewDelete = reviews.find(review => review._id != req.params.id)  
+
+    if (reviewDelete.length < reviews.length) {
+            await writeFile(reviewPath, JSON.stringify(reviewDelete))
+            res.send("Deleted Successfully")
+    } else {
+        res.send("Review Not Found")
+    }
 })
 
 
