@@ -2,6 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const {readFile, writeFile} = require("fs-extra");
 const {join} = require("path");
+const uuidv1 = require('uuid/v1');
+const shortid = require('shortid');
 const router = express.Router();
 
 const reviewPath = join(__dirname, "reviews.json");
@@ -50,12 +52,39 @@ router.get("/products/:id", async (req, res, next) => {
     
 })
 
-router.post("/reviews", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
+    const buffer = await readFile(reviewPath)
+    const content = buffer.toString()
+    const reviews = JSON.parse(content)
     
+    const newReview = {
+        _id: /* shortid.generate() */ new Date().valueOf(),
+        ...req.body,
+        elementId : uuidv1() /* req.params.id */,
+        createdAt: new Date()
+    }
+    reviews.push(newReview)
+
+    await writeFile(reviewPath, JSON.stringify(reviews))
+    res.send("Review created Successfully!")
 })
 
 router.put("/reviews/:id", async (req, res, next) => {
-    
+    const buffer = await readFile(reviewPath)
+    const content = buffer.toString()
+    const reviews = JSON.parse(content) 
+
+    const reviewToEdit = reviews.find(review => review._id == req.paramsms.id)
+
+    if (reviewToEdit) {
+        const mergedReview = Object.assign(reviewToEdit, req.body)
+        const position = reviews.indexOf(reviewToEdit)
+        reviews[position] = mergedReview
+        await writeFile(reviewPath, JSON.stringify(reviews))
+        res.send(reviewToEdit)
+    } else {
+        res.send("Review Not Found")
+    }
 })
 
 router.delete("/reviews/:id", async (req, res, next) => {
