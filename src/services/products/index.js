@@ -1,27 +1,27 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const shortid = require('shortid');
+const uuidv4 = require('uuid/v4');
 const router = express.Router();
 const multer = require('multer');
 
 const loadFromDisk = () =>
   JSON.parse(
-    fs.readFileSync(path.join(__dirname, '../../products.json'), 'utf8', err => {
+    fs.readFileSync(path.join(__dirname, '../../products.json'), err => {
       if (err) throw err;
     })
   );
 
 router.post('/', (req, res) => {
   var allProducts = loadFromDisk();
-  var newProduct = req.body;
-  newProduct._id = shortid.generate();
-  newProduct.createdAt = new Date();
-  newProduct.updatedAt = new Date();
-  newProduct.imageUrl = '';
-  allProducts.push(newProduct);
+  var addNewProduct = req.body;
+  addNewProduct._id = uuidv4();
+  addNewProduct.createdAt = new Date();
+  addNewProduct.updatedAt = new Date();
+  addNewProduct.imageUrl = '';
+  allProducts.push(addNewProduct);
   fs.writeFileSync(path.join(__dirname, '../../products.json'), JSON.stringify(allProducts));
-  res.send('Added');
+  res.send('New product add to marketplace');
 });
 
 router.get('/', (req, res) => {
